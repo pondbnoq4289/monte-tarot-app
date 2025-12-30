@@ -2,37 +2,16 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mystic Daily Tarot</title>
-    
-    <!-- Link to Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- PWA & Mobile Meta Tags -->
-    <meta name="theme-color" content="#0f0c29">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="application-name" content="Mystic Tarot">
-    
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystic Daily Tarot (78 Cards)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Icons & Fonts -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --primary-glow: #cfb53b;
             --bg-dark: #0f0c29;
             --card-ratio: 1.71; /* Standard Tarot Ratio */
-        }
-
-        /* Native App Feel Resets */
-        * {
-            -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap */
-            box-sizing: border-box;
         }
 
         body {
@@ -42,17 +21,6 @@
             color: white;
             overflow-x: hidden;
             min-height: 100vh;
-            /* Prevent pull-to-refresh on mobile */
-            overscroll-behavior-y: none;
-            /* Prevent text selection like a real app */
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        /* Allow text selection only in inputs */
-        input, textarea {
-            user-select: text;
-            -webkit-user-select: text;
         }
         
         h1, h2, .serif-font {
@@ -110,9 +78,8 @@
         }
 
         .card-front {
-            /* The back of the tarot card (pattern) */
             background: #1a1a2e;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23cfb53b' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23cfb53b' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
             border: 2px solid #5a5a7e;
             display: flex;
             align-items: center;
@@ -127,7 +94,6 @@
         }
 
         .card-back {
-            /* The actual image face */
             transform: rotateY(180deg);
             background: #000;
         }
@@ -172,10 +138,10 @@
             background: linear-gradient(90deg, #06C755, #00B900);
             box-shadow: 0 4px 15px rgba(6, 199, 85, 0.3);
             border: 1px solid rgba(255,255,255,0.2);
-            touch-action: manipulation; /* Prevent delay on tap */
         }
-        .line-btn:active {
-            transform: scale(0.98);
+        .line-btn:hover {
+            box-shadow: 0 6px 20px rgba(6, 199, 85, 0.5);
+            transform: translateY(-2px);
         }
 
         .fade-in-up {
@@ -187,18 +153,6 @@
         @keyframes fadeInUp {
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Scrollbar for text area */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05); 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #555; 
-            border-radius: 3px;
-        }
     </style>
 </head>
 <body class="flex flex-col items-center min-h-screen relative p-4 lg:p-8">
@@ -207,7 +161,7 @@
     <canvas id="star-canvas"></canvas>
 
     <!-- Main App Container -->
-    <main class="relative z-10 w-full max-w-lg mx-auto flex flex-col items-center pb-8">
+    <main class="relative z-10 w-full max-w-lg mx-auto flex flex-col items-center">
         
         <!-- Header -->
         <header class="text-center mb-8 fade-in-up" style="animation-delay: 0.1s;">
@@ -251,3 +205,290 @@
             
             <!-- Card Display Area -->
             <div class="w-64 max-w-[70%] perspective-1000 mb-8 mx-auto">
+                <div id="result-card-container" class="card-container">
+                    <!-- Front (Pattern) -->
+                    <div class="card-face card-front border-2 border-[#cfb53b]/50">
+                        <i class="fa-solid fa-star-of-david text-yellow-500/20 text-6xl"></i>
+                    </div>
+                    <!-- Back (Image) -->
+                    <div class="card-face card-back border-4 border-white/10 bg-black">
+                        <img id="card-img" src="" alt="Tarot Card" class="card-image fade-in-up">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reading Panel -->
+            <div class="w-full glass-panel rounded-2xl p-6 md:p-8 text-center fade-in-up" style="animation-delay: 0.3s;">
+                
+                <h2 id="card-name-th" class="text-2xl md:text-3xl font-bold text-white mb-1"></h2>
+                <h3 id="card-name-en" class="text-sm text-yellow-500/80 font-serif tracking-widest uppercase mb-6"></h3>
+                
+                <div class="flex flex-col gap-4 mb-6">
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/5">
+                        <p id="card-meaning" class="text-gray-200 text-sm md:text-base leading-relaxed font-light"></p>
+                    </div>
+                    
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <span id="card-keyword-1" class="px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-[10px] text-yellow-200 uppercase tracking-wide"></span>
+                        <span id="card-keyword-2" class="px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-[10px] text-yellow-200 uppercase tracking-wide"></span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-3 mt-8">
+                    
+                    <!-- LINE OA Button (แทนที่ปุ่ม AI) -->
+                    <!-- ใส่ลิ้งค์ LINE OA ของคุณที่นี่ เช่น https://line.me/R/ti/p/@yourid -->
+                    <a href="https://lin.ee/wiW9BML" target="_blank" class="group relative w-full line-btn py-3 rounded-lg overflow-hidden transition-all text-decoration-none">
+                        <div class="relative z-10 flex items-center justify-center gap-2 font-bold text-white text-sm">
+                            <i class="fa-brands fa-line text-2xl "></i>
+                            ถามแม่หมอส่วนตัวที่ LINE OA
+                        </div>
+                    </a>
+
+                    <!-- Reset Button -->
+                    <button onclick="resetApp()" class="mt-2 py-3 text-gray-400 hover:text-white text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> หยิบไพ่ใบใหม่
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let currentCard = null;
+
+        // --- Full Tarot Deck Data (78 Cards) with Friendly Thai Meanings ---
+        const tarotData = [
+            // Major Arcana
+            { en: "The Fool", th: "The Fool", meaning: "เริ่มต้นใหม่แบบชิลๆ อย่าคิดเยอะ ลุยไปตามหัวใจเลย เดี๋ยวดีเอง!", keywords: ["อิสระ", "เริ่มต้น"] },
+            { en: "The Magician", th: "The Magician", meaning: "คุณมีของ! จังหวะนี้จะหยิบจับอะไรก็สำเร็จ สกิลครบ เครื่องมือพร้อม ลุย!", keywords: ["เก่งรอบด้าน", "สำเร็จ"] },
+            { en: "The High Priestess", th: "The High Priestess", meaning: "เชื่อเซนส์ตัวเองนะวันนี้ สัญชาตญาณคุณแม่นมาก อะไรที่สงสัย เก็บไว้ดูเงียบๆ ก่อน", keywords: ["ลางสังหรณ์", "ความลับ"] },
+            { en: "The Empress", th: "The Empress", meaning: "วันแห่งความสุข! สวยรวยเสน่ห์ กินอิ่มนอนหลับ แฟนรักแฟนหลงสุดๆ", keywords: ["สมบูรณ์", "ความสุข"] },
+            { en: "The Emperor", th: "The Emperor", meaning: "ต้องนิ่ง ต้องเป๊ะ! ใช้เหตุผลนำทาง จัดระเบียบชีวิตหน่อยแล้วจะคุมสถานการณ์อยู่หมัด", keywords: ["อำนาจ", "มั่นคง"] },
+            { en: "The Hierophant", th: "The Hierophant", meaning: "ทำตามกฎระเบียบไปก่อน ปลอดภัยสุด อาจมีผู้ใหญ่ใจดีมาให้คำแนะนำ ฟังไว้ไม่เสียหาย", keywords: ["ศีลธรรม", "เรียนรู้"] },
+            { en: "The Lovers", th: "The Lovers", meaning: "ความรักพุ่งเข้าตา! หรืออาจต้องตัดสินใจเลือกสิ่งที่ชอบจริงๆ ใช้หัวใจนำทางนะ", keywords: ["ความรัก", "ทางเลือก"] },
+            { en: "The Chariot", th: "The Chariot", meaning: "เหนื่อยหน่อยนะ แต่ชนะใสๆ! ต้องมุ่งมั่น ลุยแหลก อย่าเพิ่งยอมแพ้ เป้าหมายอยู่แค่เอื้อม", keywords: ["มุ่งมั่น", "ชัยชนะ"] },
+            { en: "Strength", th: "Strength", meaning: "ใจคุณแกร่งมาก! ใช้ความนิ่งสยบความเคลื่อนไหว อดทนไว้ ชนะได้ทุกปัญหา", keywords: ["เข้มแข็ง", "อดทน"] },
+            { en: "The Hermit", th: "The Hermit", meaning: "ขอปลีกวิเวกแป๊บ วันนี้เหมาะกับการอยู่เงียบๆ ทบทวนตัวเอง แล้วจะเจอคำตอบที่ตามหา", keywords: ["ค้นหา", "สันโดษ"] },
+            { en: "Wheel of Fortune", th: "Wheel of Fortune", meaning: "ดวงกำลังเปลี่ยน! โชคชะตาหมุนเวียน อะไรที่ร้ายจะกลายเป็นดี เตรียมรับข่าวดีได้เลย", keywords: ["โชคดี", "จุดเปลี่ยน"] },
+            { en: "Justice", th: "Justice", meaning: "แฟร์ๆ กันไป ทำดีได้ดี ทำอะไรไว้วันนี้จะเห็นผล ตัดสินใจด้วยเหตุผลนะ ห้ามลำเอียง", keywords: ["ยุติธรรม", "ความจริง"] },
+            { en: "The Hanged Man", th: "The Hanged Man", meaning: "พักก่อน! รอจังหวะหน่อย ลองมองมุมกลับปรับมุมมอง แล้วจะเห็นทางออกที่คาดไม่ถึง", keywords: ["เสียสละ", "มุมมองใหม่"] },
+            { en: "Death", th: "Death", meaning: "จบเพื่อเริ่มใหม่! ทิ้งเรื่องแย่ๆ หรือนิสัยเดิมๆ ไปซะ ฟ้าหลังฝนสวยงามเสมอ", keywords: ["จบสิ้น", "เริ่มต้นใหม่"] },
+            { en: "Temperance", th: "Temperance", meaning: "ใจเย็นๆ ค่อยๆ ปรับสมดุล ประนีประนอมเข้าไว้ เดินทางสายกลางแล้วจะรุ่ง", keywords: ["ปรับตัว", "สมดุล"] },
+            { en: "The Devil", th: "The Devil", meaning: "ระวังใจตัวเองหน่อย! อย่าหลงกิเลส หรือยึดติดกับอะไรมากเกินไป ดึงสติกลับมาด่วนๆ", keywords: ["กิเลส", "หลงผิด"] },
+            { en: "The Tower", th: "The Tower", meaning: "โป๊ะแตก! อาจมีเรื่องไม่คาดฝันเกิดขึ้น ตั้งสติให้ดี ถือว่าล้างไพ่เพื่อสร้างใหม่ให้แข็งแรงกว่าเดิม", keywords: ["เปลี่ยนแปลง", "ฉับพลัน"] },
+            { en: "The Star", th: "The Star", meaning: "ความหวังมาแล้ว! ฟ้าเปิดทางสว่าง สบายใจได้เลย ช่วงนี้ทำอะไรก็ราบรื่น มีแต่เรื่องดีๆ", keywords: ["ความหวัง", "เยียวยา"] },
+            { en: "The Moon", th: "The Moon", meaning: "อย่าเพิ่งมโน! อะไรๆ ยังไม่ชัดเจน อย่าเพิ่งตัดสินใจ ระวังอารมณ์อ่อนไหวนะจ๊ะ", keywords: ["กังวล", "ไม่ชัดเจน"] },
+            { en: "The Sun", th: "The Sun", meaning: "เฮงยืนหนึ่ง! วันนี้สดใสมาก ทำอะไรก็สำเร็จ มีความสุขสุดๆ ยิ้มรับทรัพย์ได้เลย", keywords: ["สำเร็จ", "สดใส"] },
+            { en: "Judgement", th: "Judgement", meaning: "ถึงเวลาตื่นรู้! ผลของการกระทำจะส่งผลแล้ว โอกาสแก้ตัวมาถึง รีบคว้าไว้นะ", keywords: ["ผลกรรม", "โอกาสใหม่"] },
+            { en: "The World", th: "The World", meaning: "ฟินสุดๆ! ทุกอย่างลงตัวสมบูรณ์แบบ ความสำเร็จรออยู่ตรงหน้า จบสวยแน่นอน", keywords: ["สมบูรณ์", "ความสุข"] },
+
+            // Wands (ไม้เท้า - งาน/ไฟ/พลัง)
+            { en: "Ace of Wands", th: "1 ไม้เท้า", meaning: "ไฟแรงเว่อร์! ได้โอกาสใหม่เรื่องงาน หรือปิ๊งไอเดียเจ๋งๆ รีบลงมือทำเลย รุ่งแน่นอน", keywords: ["โอกาสใหม่", "ไฟแรง"] },
+            { en: "Two of Wands", th: "2 ไม้เท้า", meaning: "มองการณ์ไกล! วางแผนอนาคตได้ดี อาจได้ร่วมงานกับคนเก่ง หรือมีเกณฑ์เดินทางไกล", keywords: ["วางแผน", "ก้าวหน้า"] },
+            { en: "Three of Wands", th: "3 ไม้เท้า", meaning: "ขยับขยาย! งานก้าวหน้าไปอีกขั้น รอรับผลสำเร็จที่ส่งไป รอข่าวดีจากแดนไกล", keywords: ["ขยายงาน", "รอคอย"] },
+            { en: "Four of Wands", th: "4 ไม้เท้า", meaning: "งานมั่นคงมาก! แฮปปี้สุดๆ อาจมีงานฉลองความสำเร็จ หรือได้พักผ่อนอย่างสบายใจ", keywords: ["มั่นคง", "เฉลิมฉลอง"] },
+            { en: "Five of Wands", th: "5 ไม้เท้า", meaning: "วุ่นวายหน่อยนะ! คนเยอะเรื่องแยะ เถียงกันไม่จบ ใจเย็นๆ ค่อยๆ เคลียร์ทีละเปลาะ", keywords: ["ขัดแย้ง", "แข่งขัน"] },
+            { en: "Six of Wands", th: "6 ไม้เท้า", meaning: "ชนะใสๆ! งานที่ทำมานานสำเร็จแล้ว ได้รับคำชม ได้หน้า ได้รางวัล คุ้มค่าเหนื่อย", keywords: ["ชัยชนะ", "ชื่อเสียง"] },
+            { en: "Seven of Wands", th: "7 ไม้เท้า", meaning: "สู้ยิบตา! ปัญหาเข้ามารุมเร้า แต่คุณเอาอยู่ ยืนหยัดไว้ อย่าถอย คุณเก่งกว่าที่คิด", keywords: ["ต่อสู้", "ป้องกัน"] },
+            { en: "Eight of Wands", th: "8 ไม้เท้า", meaning: "งานด่วนงานไว! ทุกอย่างเกิดขึ้นเร็วมาก ข่าวดีมาไว ต้องรีบคว้าโอกาสให้ทันนะ", keywords: ["รวดเร็ว", "ข่าวสาร"] },
+            { en: "Nine of Wands", th: "9 ไม้เท้า", meaning: "เจ็บแต่ยังไหว! เหนื่อยสายตัวแทบขาด แต่ห้ามยอมแพ้ อีกนิดเดียวก็จะถึงเส้นชัยแล้ว", keywords: ["อดทน", "ระวังตัว"] },
+            { en: "Ten of Wands", th: "10 ไม้เท้า", meaning: "แบกหลังแอ่น! งานหนักมาก ภาระเยอะ ปล่อยวางบ้างก็ได้นะ อย่าทำคนเดียวหมด เดี๋ยวจะน็อค", keywords: ["ภาระหนัก", "รับผิดชอบ"] },
+            { en: "Page of Wands", th: "เด็กถือไม้เท้า", meaning: "เด็กใหม่ไฟแรง! ได้ข่าวดีเรื่องงาน หรือมีโปรเจกต์ใหม่ๆ ให้ตื่นเต้น กระตือรือร้นเข้าไว้", keywords: ["ข่าวดี", "กระตือรือร้น"] },
+            { en: "Knight of Wands", th: "อัศวินไม้เท้า", meaning: "ลุยแหลก! ชีพจรลงเท้า ต้องเดินทางหรือเร่งทำงาน แต่อย่าใจร้อนเกินไปนะ เดี๋ยวจะพลาด", keywords: ["เดินทาง", "บุกตะลุย"] },
+            { en: "Queen of Wands", th: "ราชินีไม้เท้า", meaning: "ตัวแม่เรื่องงาน! จัดการเก่ง มั่นใจ มีเสน่ห์ ใครๆ ก็อยากร่วมงานด้วย", keywords: ["มั่นใจ", "จัดการเก่ง"] },
+            { en: "King of Wands", th: "ราชาไม้เท้า", meaning: "ผู้นำวิสัยทัศน์ไกล! เรื่องงานคือเด็ดขาด มองขาดทุกช็อต โปรเจกต์ใหญ่สำเร็จแน่", keywords: ["ผู้นำ", "วิสัยทัศน์"] },
+
+            // Cups (ถ้วย - อารมณ์/ความรัก)
+            { en: "Ace of Cups", th: "1 ถ้วย", meaning: "ใจฟู! ความรักครั้งใหม่เริ่มต้น หรืออารมณ์ดีมีความสุข เปี่ยมไปด้วยความรู้สึกดีๆ", keywords: ["รักใหม่", "ล้นใจ"] },
+            { en: "Two of Cups", th: "2 ถ้วย", meaning: "โลกเป็นสีชมพู! เจอคนที่คลิกกันสุดๆ ตกลงปลงใจกันได้ดี ทั้งเรื่องรักและเรื่องงาน", keywords: ["คู่รัก", "ลงตัว"] },
+            { en: "Three of Cups", th: "3 ถ้วย", meaning: "ปาร์ตี้กันเถอะ! ได้เจอเพื่อนฝูง สังสรรค์เฮฮา มีเรื่องน่ายินดีให้ฉลอง", keywords: ["เพื่อนฝูง", "สังสรรค์"] },
+            { en: "Four of Cups", th: "4 ถ้วย", meaning: "เบื่อๆ เซ็งๆ มีของดีอยู่ตรงหน้าแต่ดันมองข้าม อย่ามัวแต่น้อยใจ มองรอบตัวดีๆ สิ", keywords: ["เบื่อหน่าย", "เมินเฉย"] },
+            { en: "Five of Cups", th: "5 ถ้วย", meaning: "เสียใจทำไม! เรื่องที่ผ่านไปแล้วก็ช่างมัน หันกลับมามองสิ่งที่ยังเหลืออยู่ดีกว่านะ", keywords: ["ผิดหวัง", "ปล่อยวาง"] },
+            { en: "Six of Cups", th: "6 ถ้วย", meaning: "ถ่านไฟเก่าคุ! แฟนเก่าหรือเพื่อนเก่าจะกลับมา หรือได้ของขวัญที่ทำให้คิดถึงวันวาน", keywords: ["อดีต", "ความทรงจำ"] },
+            { en: "Seven of Cups", th: "7 ถ้วย", meaning: "ฝันกลางวัน! ทางเลือกเยอะจนเลือกไม่ถูก ระวังจะเพ้อเจ้อเกินจริง ดึงสติกลับมาหน่อย", keywords: ["เพ้อฝัน", "ทางเลือก"] },
+            { en: "Eight of Cups", th: "8 ถ้วย", meaning: "มูฟออน! ถึงเวลาต้องเดินออกมาจากจุดเดิม เพื่อไปหาอะไรที่ดีกว่า ตัดใจซะเถอะ", keywords: ["จากลา", "ค้นหา"] },
+            { en: "Nine of Cups", th: "9 ถ้วย", meaning: "แฮปปี้สุดๆ! อิ่มอกอิ่มใจ ปรารถนาอะไรก็ได้สมหวัง กินอิ่มนอนหลับ สบายใจเฉิบ", keywords: ["สมหวัง", "พอใจ"] },
+            { en: "Ten of Cups", th: "10 ถ้วย", meaning: "ครอบครัวอบอุ่น! ความรักสมบูรณ์แบบ มีความสุขกันพร้อมหน้าพร้อมตา ฟินเวอร์", keywords: ["ครอบครัว", "สมบูรณ์"] },
+            { en: "Page of Cups", th: "เด็กถือถ้วย", meaning: "มีคนมาจีบ! หรือจะมีข่าวดีเรื่องความรักแบบกุ๊กกิ๊ก ทำให้หัวใจกระชุ่มกระชวย", keywords: ["ข่าวรัก", "อ่อนโยน"] },
+            { en: "Knight of Cups", th: "อัศวินถ้วย", meaning: "โรแมนติกตัวพ่อ! จะมีคนมาโปรยเสน่ห์ใส่ หรือได้รับคำเชิญชวนที่น่าสนใจ", keywords: ["โรแมนติก", "ข้อเสนอ"] },
+            { en: "Queen of Cups", th: "ราชินีถ้วย", meaning: "แม่พระมาโปรด! อารมณ์อ่อนไหว ขี้สงสาร ใช้เซนส์ดูแลคนรอบข้างได้ดี", keywords: ["ใจดี", "อ่อนไหว"] },
+            { en: "King of Cups", th: "ราชาถ้วย", meaning: "ป๋าใจดี! ควบคุมอารมณ์เก่ง เป็นที่ปรึกษาที่ดี ใจกว้างดั่งมหาสมุทร", keywords: ["เมตตา", "ควบคุมอารมณ์"] },
+
+            // Swords (ดาบ - ความคิด/อุปสรรค)
+            { en: "Ace of Swords", th: "1 ดาบ", meaning: "ตัดสินใจเด็ดขาด! ปัญหาเคลียร์ได้ด้วยสติปัญญา ฟันธงไปเลย ชนะแน่นอน", keywords: ["ตัดสินใจ", "ชัยชนะ"] },
+            { en: "Two of Swords", th: "2 ดาบ", meaning: "เลือกไม่ถูก! ปิดตาตัวเองอยู่รึเปล่า ตัดสินใจยาก สถานการณ์มันกลืนไม่เข้าคายไม่ออก", keywords: ["ลังเล", "ปิดกั้น"] },
+            { en: "Three of Swords", th: "3 ดาบ", meaning: "อกหักดังเปราะ! ระวังเรื่องกระทบจิตใจ ผิดหวัง หรือโดนแทงข้างหลัง เจ็บนิดนึงนะ", keywords: ["เสียใจ", "ผิดหวัง"] },
+            { en: "Four of Swords", th: "4 ดาบ", meaning: "พักยกด่วน! เหนื่อยมาเยอะ ต้องหาเวลาสงบจิตใจ พักผ่อนร่างกายก่อนลุยต่อ", keywords: ["พักผ่อน", "นิ่งเงียบ"] },
+            { en: "Five of Swords", th: "5 ดาบ", meaning: "อย่าหาทำ! ชนะไปก็ไม่คุ้มเสีย อาจมีปากเสียงหรือโดนเอาเปรียบ ถอยออกมาดีกว่า", keywords: ["พ่ายแพ้", "เห็นแก่ตัว"] },
+            { en: "Six of Swords", th: "6 ดาบ", meaning: "ไปตายเอาดาบหน้า! สถานการณ์กำลังจะดีขึ้น ช้าหน่อยแต่ชัวร์ ปัญหากำลังจะผ่านพ้นไป", keywords: ["ย้ายถิ่น", "ดีขึ้น"] },
+            { en: "Seven of Swords", th: "7 ดาบ", meaning: "ลับลมคมใน! ระวังโดนหลอก หรือต้องใช้เล่ห์เหลี่ยมบ้างถึงจะรอด อย่าไว้ใจใครง่ายๆ", keywords: ["เล่ห์เหลี่ยม", "หลบหนี"] },
+            { en: "Eight of Swords", th: "8 ดาบ", meaning: "มืดแปดด้าน! รู้สึกเหมือนโดนขัง หาทางออกไม่เจอ ใจเย็นๆ ปัญหาอยู่ที่ความคิดตัวเองทั้งนั้น", keywords: ["อึดอัด", "หาทางออก"] },
+            { en: "Nine of Swords", th: "9 ดาบ", meaning: "คิดมากไปเอง! เครียดจนนอนไม่หลับ กังวลเวอร์เกินเบอร์ ทั้งที่จริงอาจไม่มีอะไรเลย", keywords: ["วิตก", "นอนไม่หลับ"] },
+            { en: "Ten of Swords", th: "10 ดาบ", meaning: "เจ็บแต่จบ! แย่สุดๆ แล้ว แต่มันจบแล้วนะ ต่อไปนี้จะมีแต่เรื่องดีขึ้น ฟ้าหลังฝนรออยู่", keywords: ["จุดจบ", "เริ่มต้นใหม่"] },
+            { en: "Page of Swords", th: "เด็กถือดาบ", meaning: "สอดรู้สอดเห็น! อยากรู้อยากเห็นไปหมด ระวังคำพูดหน่อย เดี๋ยวจะหาเรื่องใส่ตัว", keywords: ["สืบเสาะ", "ระวังคำพูด"] },
+            { en: "Knight of Swords", th: "อัศวินดาบ", meaning: "ใจร้อนดั่งไฟ! พุ่งชนทุกปัญหา พูดจาขวานผ่าซาก ระวังจะทะเลาะกับคนอื่นนะ", keywords: ["มุทะลุ", "รวดเร็ว"] },
+            { en: "Queen of Swords", th: "ราชินีดาบ", meaning: "หญิงแกร่ง! ตรงไปตรงมา เด็ดขาด ไม่อ้อมค้อม ใครไม่จริงใจโดนตัดทิ้งหมด", keywords: ["เด็ดขาด", "ตรงไปตรงมา"] },
+            { en: "King of Swords", th: "ราชาดาบ", meaning: "เน้นเหตุผล! ตัดสินใจด้วยสมองล้วนๆ เย็นชาแต่ยุติธรรม ปรึกษากฎหมายหรือวิชาการจะดี", keywords: ["ตรรกะ", "อำนาจ"] },
+
+            // Pentacles (เหรียญ - เงิน/ความมั่นคง)
+            { en: "Ace of Pentacles", th: "1 เหรียญ", meaning: "ลาภลอยมาแล้ว! โอกาสทองเรื่องเงินๆ ทองๆ เริ่มต้นธุรกิจหรือการลงทุน เฮงแน่นอน", keywords: ["โชคลาภ", "โอกาสทอง"] },
+            { en: "Two of Pentacles", th: "2 เหรียญ", meaning: "หมุนเงินตัวเป็นเกลียว! ต้องบริหารจัดการดีๆ ประคองสถานการณ์ไปก่อน ยังเอาอยู่", keywords: ["หมุนเงิน", "ปรับตัว"] },
+            { en: "Three of Pentacles", th: "3 เหรียญ", meaning: "ฝีมือเข้าตา! งานดีมีคนเห็นคุณค่า อาจได้รับงานเพิ่มหรือโบนัสพิเศษ ร่วมมือกับคนอื่นแล้วรุ่ง", keywords: ["ทีมเวิร์ค", "ฝีมือ"] },
+            { en: "Four of Pentacles", th: "4 เหรียญ", meaning: "งกไว้ก่อน! หวงของ หวงเงิน รู้จักเก็บออมน่ะดี แต่อย่าตระหนี่จนเครียดนะ", keywords: ["หวงแหน", "ประหยัด"] },
+            { en: "Five of Pentacles", th: "5 เหรียญ", meaning: "ช่วงช็อต! การเงินฝืดเคือง รู้สึกขาดแคลน อย่าเก็บไว้คนเดียว ขอความช่วยเหลือคนใกล้ตัวได้นะ", keywords: ["ขัดสน", "ลำบาก"] },
+            { en: "Six of Pentacles", th: "6 เหรียญ", meaning: "ผู้ให้และผู้รับ! ใจบุญสุนทาน มีเกณฑ์ได้ช่วยเหลือคน หรือได้รับความช่วยเหลือเรื่องเงิน", keywords: ["แบ่งปัน", "ช่วยเหลือ"] },
+            { en: "Seven of Pentacles", th: "7 เหรียญ", meaning: "รอเก็บเกี่ยว! ลงทุนลงแรงไปแล้ว รอผลลัพธ์หน่อย ช้านิดแต่ได้ชัวร์ ใจเย็นๆ", keywords: ["รอคอย", "ผลกำไร"] },
+            { en: "Eight of Pentacles", th: "8 เหรียญ", meaning: "ขยันแล้วรวย! ตั้งหน้าตั้งตาทำมาหากิน พัฒนาฝีมือไปเรื่อยๆ เงินเข้ากระเป๋าตุงแน่นอน", keywords: ["ขยัน", "ฝึกฝน"] },
+            { en: "Nine of Pentacles", th: "9 เหรียญ", meaning: "สวยและรวยมาก! สบายตัวแล้ว มีเงินใช้คล่องมือ เปย์ตัวเองได้เต็มที่ ชีวิตดี๊ดี", keywords: ["มั่งคั่ง", "สุขสบาย"] },
+            { en: "Ten of Pentacles", th: "10 เหรียญ", meaning: "รวยล้นฟ้า! มรดกตกทอด ครอบครัวมั่นคง การเงินปึกแผ่นสุดๆ ไร้กังวล", keywords: ["มรดก", "มั่นคงถาวร"] },
+            { en: "Page of Pentacles", th: "เด็กถือเหรียญ", meaning: "เริ่มเก็บออม! สนใจเรียนรู้เรื่องการเงิน หรือได้รับโอกาสเล็กๆ น้อยๆ ที่จะทำเงินได้ในอนาคต", keywords: ["เรียนรู้", "โอกาส"] },
+            { en: "Knight of Pentacles", th: "อัศวินเหรียญ", meaning: "ช้าแต่ชัวร์! เดินหน้าเรื่อยๆ ไม่หวือหวาแต่เน้นผลลัพธ์ที่จับต้องได้ อดทนแล้วจะรวย", keywords: ["รอบคอบ", "ขยัน"] },
+            { en: "Queen of Pentacles", th: "ราชินีเหรียญ", meaning: "แม่บ้านการเงิน! ดูแลจัดการทรัพย์สินเก่ง ใจดี อบอุ่น พร้อมซัพพอร์ตทุกคน", keywords: ["ใจบุญ", "ดูแล"] },
+            { en: "King of Pentacles", th: "ราชาเหรียญ", meaning: "เจ้าสัวมาเอง! ประสบความสำเร็จเรื่องเงินทองสูงสุด จับอะไรเป็นเงินเป็นทอง มั่นคงมาก", keywords: ["เจ้าสัว", "มั่งคั่ง"] }
+        ];
+
+        // Helper to formatting filename
+        function getCardImageName(card) {
+            let name = card.en.replace(/\s+/g, '');
+            return name + '.jpg';
+        }
+
+        // --- App Logic ---
+        const screenPick = document.getElementById('screen-pick');
+        const screenLoading = document.getElementById('screen-loading');
+        const screenResult = document.getElementById('screen-result');
+        const cardContainer = document.getElementById('result-card-container');
+        const cardImg = document.getElementById('card-img');
+        
+        const outNameTh = document.getElementById('card-name-th');
+        const outNameEn = document.getElementById('card-name-en');
+        const outMeaning = document.getElementById('card-meaning');
+        const outKey1 = document.getElementById('card-keyword-1');
+        const outKey2 = document.getElementById('card-keyword-2');
+
+        function pickCard() {
+            screenPick.classList.add('hidden');
+            screenLoading.classList.remove('hidden');
+            screenLoading.classList.add('flex');
+
+            // Select Card
+            const randomIndex = Math.floor(Math.random() * tarotData.length);
+            currentCard = tarotData[randomIndex];
+            
+            // Image Loading Logic (Smart Fallback)
+            const imageName = getCardImageName(currentCard); // e.g. "TheFool.jpg"
+            
+            // 1. Link รูปของคุณ (ต้องตั้ง Repo เป็น Public และชื่อไฟล์ต้องตรง เช่น TheFool.jpg)
+            const userBaseUrl = "https://raw.githubusercontent.com/pondbnoq4289/my-tarot-images/main/";
+            
+            // 2. Link สำรอง (ถ้าของ user ใช้ไม่ได้ จะมาใช้อันนี้แทน)
+            const fallbackBaseUrl = "https://raw.githubusercontent.com/kylekthompson/tarot-images/master/images/";
+            
+            const userImgUrl = userBaseUrl + imageName;
+            const fallbackImgUrl = fallbackBaseUrl + imageName;
+
+            // ลองโหลดรูปจากของคุณก่อน
+            const imgLoader = new Image();
+            imgLoader.src = userImgUrl;
+            
+            imgLoader.onload = () => {
+                // ถ้าโหลดได้ปกติ (ชื่อถูก/Public)
+                setTimeout(() => {
+                    cardImg.src = userImgUrl;
+                    showResult();
+                }, 1000);
+            };
+            
+            imgLoader.onerror = () => {
+                // ถ้าโหลดไม่ได้ (ไฟล์ไม่มี/Private) -> ใช้รูปสำรองทันที
+                console.warn(`User image for ${imageName} not found. Using fallback.`);
+                cardImg.src = fallbackImgUrl;
+                // ถ้าโหลดเสร็จ (แม้จะเป็นรูปสำรอง) ก็ให้แสดงผล
+                setTimeout(() => {
+                   showResult();
+                }, 1000);
+            };
+        }
+
+        function showResult() {
+            outNameTh.textContent = currentCard.th;
+            outNameEn.textContent = currentCard.en;
+            outMeaning.textContent = currentCard.meaning;
+            outKey1.textContent = currentCard.keywords[0];
+            outKey2.textContent = currentCard.keywords[1];
+
+            screenLoading.classList.add('hidden');
+            screenLoading.classList.remove('flex');
+            screenResult.classList.remove('hidden');
+            screenResult.classList.add('flex');
+            
+            setTimeout(() => {
+                cardContainer.classList.add('flipped');
+            }, 100);
+        }
+
+        function resetApp() {
+            cardContainer.classList.remove('flipped');
+            setTimeout(() => {
+                screenResult.classList.add('hidden');
+                screenResult.classList.remove('flex');
+                screenPick.classList.remove('hidden');
+            }, 600);
+        }
+
+        // --- Background Animation (Same) ---
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.2;
+                this.vy = (Math.random() - 0.5) * 0.2;
+                this.size = Math.random() * 1.5;
+                this.alpha = Math.random() * 0.5;
+                this.fade = (Math.random() * 0.01) + 0.005;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.fade;
+                if (this.alpha <= 0 || this.x < 0 || this.x > width || this.y < 0 || this.y > height) this.reset();
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 215, 0, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() { particles = Array.from({length: 80}, () => new Particle()); }
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        initParticles();
+        animate();
+
+    </script>
+</body>
+</html>
