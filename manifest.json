@@ -1,0 +1,21 @@
+{
+    "name": "Monte Tarot",
+    "short_name": "Monte Tarot",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#0f0c29",
+    "theme_color": "#0f0c29",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "[https://raw.githubusercontent.com/pondbnoq4289/my-tarot-images/main/TheFool.jpg](https://raw.githubusercontent.com/pondbnoq4289/my-tarot-images/main/TheFool.jpg)",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        },
+        {
+            "src": "[https://raw.githubusercontent.com/pondbnoq4289/my-tarot-images/main/TheFool.jpg](https://raw.githubusercontent.com/pondbnoq4289/my-tarot-images/main/TheFool.jpg)",
+            "sizes": "512x512",
+            "type": "image/jpeg"
+        }
+    ]
+}

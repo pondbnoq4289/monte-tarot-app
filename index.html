@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mystic Daily Tarot</title>
+    
+    <!-- Link to Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- PWA & Mobile Meta Tags -->
+    <meta name="theme-color" content="#0f0c29">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="application-name" content="Mystic Tarot">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons & Fonts -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-glow: #cfb53b;
+            --bg-dark: #0f0c29;
+            --card-ratio: 1.71; /* Standard Tarot Ratio */
+        }
+
+        /* Native App Feel Resets */
+        * {
+            -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap */
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 0%, #2a2356 0%, #0f0c29 70%);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+            /* Prevent pull-to-refresh on mobile */
+            overscroll-behavior-y: none;
+            /* Prevent text selection like a real app */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Allow text selection only in inputs */
+        input, textarea {
+            user-select: text;
+            -webkit-user-select: text;
+        }
+        
+        h1, h2, .serif-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Particle Canvas */
+        #star-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(20, 20, 35, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        /* Card Flip Animation */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .card-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 171%; /* Aspect Ratio for Tarot */
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card-container.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        .card-front {
+            /* The back of the tarot card (pattern) */
+            background: #1a1a2e;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23cfb53b' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            border: 2px solid #5a5a7e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card-front:hover {
+            border-color: #cfb53b;
+            transform: scale(1.02);
+        }
+
+        .card-back {
+            /* The actual image face */
+            transform: rotateY(180deg);
+            background: #000;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Mystic Glow */
+        .glow-text {
+            text-shadow: 0 0 15px rgba(207, 181, 59, 0.4);
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Loading Spinner */
+        .mystic-loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: #cfb53b;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* LINE Button Style */
+        .line-btn {
+            background: linear-gradient(90deg, #06C755, #00B900);
+            box-shadow: 0 4px 15px rgba(6, 199, 85, 0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            touch-action: manipulation; /* Prevent delay on tap */
+        }
+        .line-btn:active {
+            transform: scale(0.98);
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar for text area */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #555; 
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center min-h-screen relative p-4 lg:p-8">
+
+    <!-- Background Canvas -->
+    <canvas id="star-canvas"></canvas>
+
+    <!-- Main App Container -->
+    <main class="relative z-10 w-full max-w-lg mx-auto flex flex-col items-center pb-8">
+        
+        <!-- Header -->
+        <header class="text-center mb-8 fade-in-up" style="animation-delay: 0.1s;">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full border border-yellow-500/30 bg-black/40 mb-3 backdrop-blur-md">
+                <i class="fa-solid fa-moon text-yellow-400 text-lg"></i>
+            </div>
+            <h1 class="text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-b from-yellow-100 to-yellow-600 font-bold mb-1 glow-text serif-font tracking-wide">MONTE TAROT</h1>
+            <p class="text-purple-200/70 text-sm font-light tracking-[0.2em] uppercase">Daily Guidance</p>
+        </header>
+
+        <!-- Screen 1: Pick a Card (Deck View) -->
+        <div id="screen-pick" class="flex flex-col items-center w-full transition-all duration-500 fade-in-up" style="animation-delay: 0.2s;">
+            
+            <div class="relative w-48 perspective-1000 cursor-pointer group mb-8" onclick="pickCard()">
+                <!-- Decorative Stack -->
+                <div class="absolute top-0 left-0 w-full pb-[171%] bg-slate-800 rounded-xl border border-white/5 transform translate-x-4 translate-y-4 opacity-40 transition-transform group-hover:translate-x-5 group-hover:translate-y-5"></div>
+                <div class="absolute top-0 left-0 w-full pb-[171%] bg-slate-800 rounded-xl border border-white/5 transform translate-x-2 translate-y-2 opacity-70 transition-transform group-hover:translate-x-3 group-hover:translate-y-3"></div>
+                
+                <!-- Main Card (Clickable) -->
+                <div class="relative w-full pb-[171%] bg-[#1a1a2e] rounded-xl border-2 border-[#cfb53b] shadow-2xl shadow-yellow-900/20 transform transition-transform duration-300 group-hover:-translate-y-2 floating overflow-hidden">
+                    <div class="absolute inset-0 flex flex-col items-center justify-center opacity-80">
+                         <!-- Pattern overlay from CSS -->
+                         <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M10 0L20 10L10 20L0 10Z\' fill=\'%23cfb53b\' fill-opacity=\'0.05\'/%3E%3C/svg%3E');"></div>
+                         <i class="fa-solid fa-eye text-[#cfb53b] text-4xl mb-2 relative z-10"></i>
+                         <span class="text-[#cfb53b] text-xs tracking-widest uppercase font-semibold relative z-10">แตะเพื่อหยิบไพ่</span>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="text-white/60 font-light text-sm">ตั้งจิตให้มั่น... แล้วเลือกไพ่ของคุณ</p>
+        </div>
+
+        <!-- Screen 2: Loading State -->
+        <div id="screen-loading" class="hidden flex-col items-center justify-center py-20 fade-in-up">
+            <div class="mystic-loader mb-6"></div>
+            <p class="text-purple-200 tracking-widest text-xs uppercase animate-pulse">Connecting to the Universe...</p>
+        </div>
+
+        <!-- Screen 3: Result (Reveal) -->
+        <div id="screen-result" class="hidden w-full flex-col items-center pb-20">
+            
+            <!-- Card Display Area -->
+            <div class="w-64 max-w-[70%] perspective-1000 mb-8 mx-auto">
